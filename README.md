@@ -15,7 +15,6 @@
 - 메인 페이지 </br>
 ![8](https://github.com/user-attachments/assets/b7fa6692-7e0d-4a6c-9aa5-61bdf244fd5f)
 
-
 - 갈맷길 코스 조회 </br>
   ![6](https://github.com/user-attachments/assets/cf39bb45-4058-4787-af26-db3c73f1db7c)
 
@@ -30,3 +29,6 @@
 
 - 부산의 각 구별 관광 안내소 정보 조회
   ![5](https://github.com/user-attachments/assets/47f2fc86-3a2b-4a36-9617-fca85dadddac)
+
+### 거리 계산 방식
+![9](https://github.com/user-attachments/assets/0714762b-b714-4f42-9e78-f8f31c0acf89)
