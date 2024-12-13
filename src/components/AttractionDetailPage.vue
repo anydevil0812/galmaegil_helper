@@ -85,21 +85,21 @@ export default {
     async fetchSightAndRestaurantData(uc_seq) {
       this.uc_seq = uc_seq; // uc_seq를 data에 저장하여 계속 사용
       try {
-        const response = await fetch(`/api/getTourInfo?uc_seq=${uc_seq}&aPage=1&rPage=1&pageSize=${this.pageSize}`);
+        const response = await fetch(`/api/getAttractionDetail?ucSeq=${this.uc_seq}&aPage=${this.aPage}&rPage=${this.rPage}&pageSize=${this.pageSize}`);
         if (!response.ok) throw new Error("API 호출 실패");
         const data = await response.json();
 
         // 명소 데이터 처리
         this.sightData = [
           {
-            sight_name: data.sight_name,
-            sight_place: data.sight_place,
-            sight_title: data.sight_title,
-            sight_itemcntnts: data.sight_itemcntnts,
-            sight_course: data.sight_course,
-            sight_lat: data.sight_lat,
-            sight_lng: data.sight_lng,
-            sight_main_img_t: data.sight_main_img_t,
+            sight_name: data.name,
+            sight_place: data.place,
+            sight_title: data.title,
+            sight_itemcntnts: data.itemcntnts,
+            sight_course: data.course,
+            sight_lat: data.lat,
+            sight_lng: data.lng,
+            sight_main_img_t: data.main_img_t,
           },
         ];
 
@@ -114,19 +114,19 @@ export default {
     },
     async fetchMoreRestaurants() {
       try {
-        const response = await fetch(`/api/getTourInfo?uc_seq=${this.uc_seq}&rPage=${this.rPage}&aPage=${this.aPage}&pageSize=${this.pageSize}`);
+        const response = await fetch(`/api/getAttractionDetail?ucSeq=${this.uc_seq}&aPage=${this.aPage}&rPage=${this.rPage}&pageSize=${this.pageSize}`);
         if (!response.ok) throw new Error("맛집 데이터 호출 실패");
         const { restaurants } = await response.json();
 
         // 맛집 데이터 갱신
         this.restaurantData = [...this.restaurantData, ...restaurants.map(item => ({
-          restaurant_name: item.restaurant_name,
-          restaurant_addr1: item.restaurant_addr1,
-          restaurant_cntct_tel: item.restaurant_cntct_tel,
-          restaurant_usage_day: item.restaurant_usage_day,
-          restaurant_itemcntnts: item.restaurant_itemcntnts,
-          restaurant_distance: item.restaurant_distance.toFixed(2),
-          restaurant_main_img_t: item.restaurant_main_img_t,
+          restaurant_name: item.name,
+          restaurant_addr1: item.addr1,
+          restaurant_cntct_tel: item.cntct_tel,
+          restaurant_usage_day: item.usage_day_,
+          restaurant_itemcntnts: item.itemcntnts,
+          restaurant_distance: item.distance.toFixed(2),
+          restaurant_main_img_t: item.main_img_t,
         }))];
         
         this.restaurantHasMore = (restaurants.length == this.pageSize);
@@ -137,21 +137,21 @@ export default {
     },
     async fetchMoreAccommodations() {
       try {
-        const response = await fetch(`/api/getTourInfo?uc_seq=${this.uc_seq}&rPage=${this.rPage}&aPage=${this.aPage}&pageSize=${this.pageSize}`);
+        const response = await fetch(`/api/getAttractionDetail?ucSeq=${this.uc_seq}&aPage=${this.aPage}&rPage=${this.rPage}&pageSize=${this.pageSize}`);
         if (!response.ok) throw new Error("숙박 데이터 호출 실패");
-        const { accom } = await response.json();
+        const { accommodations } = await response.json();
 
         // 숙박 데이터 갱신
-        this.accommodationData = [...this.accommodationData, ...accom.map(item => ({
-          accom_name: item.accom_name,
-          accom_addr1: item.accom_addr1,
-          accom_cntct_tel: item.accom_cntct_tel,
-          accom_num_room: item.accom_num_room,
-          accom_homepage_u: item.accom_homepage_u,
-          accom_distance: item.accom_distance.toFixed(2),
+        this.accommodationData = [...this.accommodationData, ...accommodations.map(item => ({
+          accom_name: item.name,
+          accom_addr1: item.addr1,
+          accom_cntct_tel: item.cntct_tel,
+          accom_num_room: item.num_room,
+          accom_homepage_u: item.homepage_u,
+          accom_distance: item.distance.toFixed(2),
         }))];
 
-        this.accommodationHasMore = (accom.length == this.pageSize);
+        this.accommodationHasMore = (accommodations.length == this.pageSize);
         this.aPage++;
       } catch (error) {
         console.error("숙박 데이터 불러오기 중 오류:", error);

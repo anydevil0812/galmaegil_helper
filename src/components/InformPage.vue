@@ -42,18 +42,18 @@
     methods: {
       async fetchGalmaegilCourseData() {
         try {
-          const response = await fetch("/api/getGalmaegilCourse");
+          const response = await fetch("/api/getCourseList");
           if (!response.ok) {
             throw new Error("API 호출 실패");
           }
           const data = await response.json();
-        
+          
           this.definition = "갈맷길은 부산의 자연을 경험하며 걷는 도보 여행길로, 아름다운 해변과 산책로를 포함한 다양한 코스로 구성되어 있습니다."; // 정의는 고정 값으로 설정
-          this.courses = data.response.map(item => ({
-            name: item.gugan_nm, 
-            description: item.gm_course, 
-            range: item.gm_range, 
-            difficulty: item.gm_degree, 
+          this.courses = data.response.body.items.item.map(courseData => ({
+            name: courseData.gugan_nm, 
+            description: courseData.gm_course, 
+            range: courseData.gm_range, 
+            difficulty: courseData.gm_degree, 
           }));
         } catch (error) {
           console.error("API 호출 중 오류 발생:", error);

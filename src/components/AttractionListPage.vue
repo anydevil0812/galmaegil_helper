@@ -57,24 +57,24 @@ export default {
           this.hasNextPage = true;
         }
 
-        const response = await fetch(`/api/getTourSightInfoByPage?numOfRows=${this.pageSize}&pageNo=${this.currentPage}`);
+        const response = await fetch(`/api/getAttractionListByPage?pageSize=${this.pageSize}&currentPage=${this.currentPage}`);
         const data = await response.json();
-      
-        if (data.response && data.response.length > 0) {
+        
+        if (data.response && data.response.body.items.item.length > 0) {
           // 기존 데이터에 새 데이터 추가
           this.attractions.push(
-            ...data.response.map((item) => ({
-              uc_seq: item.uc_seq,
-              name: item.name,
-              title: item.title,
-              description: item.itemcntnts,
-              lat: item.lat,
-              lng: item.lng,
+            ...data.response.body.items.item.map((sight) => ({
+              uc_seq: sight.uc_seq,
+              name: sight.name,
+              title: sight.title,
+              description: sight.itemcntnts,
+              lat: sight.lat,
+              lng: sight.lng,
             }))
           );
 
           // 페이지 크기와 데이터 개수를 비교하여 더 볼 데이터가 있는지 확인
-          this.hasNextPage = (data.response.length == this.pageSize);
+          this.hasNextPage = (data.response.body.items.item.length == this.pageSize);
           
         } else {
           // 더 이상 데이터가 없는 경우

@@ -12,10 +12,9 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': { 
-        target: 'https://mydata-api.cyber-i.com', 
+        target: 'http://localhost:8081', 
         changeOrigin: true,
-        ws: false, 
-        pathRewrite: { '^/api': '/svc/test' }, // ^/api = /api로 시작하는 모든 경로들을 의미
+        pathRewrite: { '^/api': '' }, // ^/api = /api로 시작하는 모든 경로들을 의미
       },
     },
   },

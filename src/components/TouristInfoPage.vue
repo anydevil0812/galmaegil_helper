@@ -10,7 +10,7 @@
     </div>
 
     <!-- 반환된 데이터 출력 -->
-    <div v-if="touristInfo.length > 0">
+    <div v-if="touristInfoKR && touristInfoEN && touristInfoJP">
       <table>
         <thead>
           <tr>
@@ -20,30 +20,30 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(info, index) in touristInfo" :key="index">
+          <tr>
             <td>
-              <strong>{{ info.NM }}</strong><br />
-              {{ info.ADDR1 }}<br />
-              전화: {{ info.INQRY_TEL }}<br />
-              운영시간: {{ info.OP_TIME }}<br />
+              <strong>{{ touristInfoKR.NM }}</strong><br />
+              {{ touristInfoKR.ADDR1 }}<br />
+              전화: {{ touristInfoKR.INQRY_TEL }}<br />
+              운영시간: {{ touristInfoKR.OP_TIME }}<br />
               <br />
-              <span v-html="formatWithConditionalBreaks(info.INFOFC_INTRCN)"></span>
+              <span v-html="formatWithConditionalBreaks(touristInfoKR.INFOFC_INTRCN)"></span>
             </td>
             <td>
-              <strong>{{ info.NM_EN }}</strong><br />
-              {{ info.ADDR1_EN }}<br />
-              Phone: {{ info.INQRY_TEL }}<br />
-              Hours: {{ info.OP_TIME }}<br />
+              <strong>{{ touristInfoEN.NM }}</strong><br />
+              {{ touristInfoEN.ADDR1 }}<br />
+              Phone: {{ touristInfoEN.INQRY_TEL }}<br />
+              Hours: {{ touristInfoEN.OP_TIME }}<br />
               <br />
-              <span v-html="formatWithConditionalBreaks(info.INFOFC_INTRCN_EN)"></span>
+              <span v-html="formatWithConditionalBreaks(touristInfoEN.INFOFC_INTRCN)"></span>
             </td>
             <td>
-              <strong>{{ info.NM_JP }}</strong><br />
-              {{ info.ADDR1_JP }}<br />
-              電話: {{ info.INQRY_TEL }}<br />
-              営業時間: {{ info.OP_TIME }}<br />
+              <strong>{{ touristInfoJP.NM }}</strong><br />
+              {{ touristInfoJP.ADDR1 }}<br />
+              電話: {{ touristInfoJP.INQRY_TEL }}<br />
+              営業時間: {{ touristInfoJP.OP_TIME }}<br />
               <br />
-              <span v-html="formatWithConditionalBreaksJp(info.INFOFC_INTRCN_JP)"></span>
+              <span v-html="formatWithConditionalBreaksJp(touristInfoJP.INFOFC_INTRCN)"></span>
             </td>
           </tr>
         </tbody>
@@ -71,30 +71,52 @@ export default {
         { name: "중구", pageNo: 4 },
         { name: "해운대구", pageNo: 16 },
       ],
-      touristInfo: [], // API에서 받은 관광 정보
+      touristInfoKR: null,  
+      touristInfoEN: null,  
+      touristInfoJP: null,  
     };
   },
   methods: {
     async fetchTouristInfo(pageNo) {
       try {
-        const response = await fetch(`/api/getTourCenterInfo?pageNo=${pageNo}`);
-        const data = await response.json();
-        this.touristInfo = data.response || [];
+        const requests = [
+            fetch(`/api/getTourCenterInfo?pageNo=${pageNo}&type=Kr`),
+            fetch(`/api/getTourCenterInfo?pageNo=${pageNo}&type=En`),
+            fetch(`/api/getTourCenterInfo?pageNo=${pageNo}&type=Ja`),
+        ];
+
+        // 요청을 병렬로 처리
+        const responses = await Promise.all(requests);
+
+        // 각 응답에서 JSON 데이터 추출
+        const data = await Promise.all(responses.map(response => response.json()));
+        
+        this.touristInfoKR = data[0].getInfoOfficeKr.item[0] || [];
+        this.touristInfoEN = data[1].getInfoOfficeEn.item[0] || [];
+        this.touristInfoJP = data[2].getInfoOfficeJa.item[0] || [];
+
       } catch (error) {
         console.error("API 요청 실패:", error);
-        this.touristInfo = [];
+        this.touristInfoKR = {};
+        this.touristInfoEN = {};
+        this.touristInfoJP = {};
       }
     },
     formatWithConditionalBreaks(text) {
       if (!text) return "";
+
+      text = text.replace(/\/upload_data/g, "https://www.visitbusan.net/upload_data");
 
       return text.replace(/\.(?=\s|$)/g, ".<br><br>")
                  .replace(/(\d)\.(?=\s)/g, "$1."); 
     },
     formatWithConditionalBreaksJp(text) {
       if (!text) return "";
-        return text.replace(/。(?=\s|$)/g, ".<br><br>") 
-                   .replace(/。(?!\d)/g, ".<br>"); 
+
+      text = text.replace(/\/upload_data/g, "https://www.visitbusan.net/upload_data");
+
+      return text.replace(/。(?=\s|$)/g, ".<br><br>") 
+                 .replace(/。(?!\d)/g, ".<br>"); 
     },
 
   },
